@@ -4,14 +4,22 @@
 set -euo pipefail
 
 SKILLS_DIR="${HOME}/.claude/skills"
+HOOKS_DIR="${HOME}/.claude/hooks"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-mkdir -p "$SKILLS_DIR"
+mkdir -p "$SKILLS_DIR" "$HOOKS_DIR"
 
 echo "==> Installing my own skills (council, memory-write-gate)"
 for s in council memory-write-gate; do
   rm -rf "${SKILLS_DIR:?}/$s"
   cp -r "$REPO_DIR/skills/$s" "$SKILLS_DIR/$s"
   echo "    installed: $s"
+done
+
+echo "==> Installing hooks (complexity-escalate)"
+for h in complexity-escalate.py; do
+  cp "$REPO_DIR/hooks/$h" "$HOOKS_DIR/$h"
+  chmod +x "$HOOKS_DIR/$h"
+  echo "    installed: $h"
 done
 
 echo "==> Cloning third-party skills from source"
@@ -39,6 +47,7 @@ cat <<'EOF'
        /plugin marketplace add obra/superpowers-marketplace
        /plugin install superpowers@superpowers-marketplace
   2) Merge settings.example.json into ~/.claude/settings.json
-     (note: "model": "sonnet" default; escalate to Opus explicitly).
-  3) Restart Claude Code (or /clear) so new skills load.
+     ("model": "opusplan" = Opus in plan mode, Sonnet otherwise;
+      UserPromptSubmit hook auto-escalates complex prompts to an Opus subagent).
+  3) Restart Claude Code (or /clear) so new skills + hooks load.
 EOF
