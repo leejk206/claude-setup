@@ -1,5 +1,9 @@
 {
   "model": "opusplan",
+  "statusLine": {
+    "type": "command",
+    "command": "python3 \"$HOME/.claude/statusline.sh\""
+  },
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -21,6 +25,13 @@
     }
   },
   "permissions": {
-    "allow": ["Bash", "Read", "Glob", "Grep"]
+    "allow": [
+      "Bash", "Read", "Glob", "Grep",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_wait_for",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_console_messages",
+      "mcp__pal__chat"
+    ]
   }
 }

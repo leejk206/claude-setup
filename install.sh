@@ -22,21 +22,29 @@ for h in complexity-escalate.py; do
   echo "    installed: $h"
 done
 
+echo "==> Installing statusline (model · dir · git branch)"
+cp "$REPO_DIR/statusline.sh" "${HOME}/.claude/statusline.sh"
+chmod +x "${HOME}/.claude/statusline.sh"
+echo "    installed: statusline.sh"
+
 echo "==> Cloning third-party skills from source"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
 clone_skill () {  # repo_url  subpath_in_repo  dest_name  "attribution"
   local url="$1" sub="$2" name="$3" attrib="$4"
-  git clone --depth 1 -q "$url" "$TMP/$name-src"
+  local cache="$TMP/repo-$(echo "$url" | tr -c 'A-Za-z0-9' '_')"
+  [ -d "$cache" ] || git clone --depth 1 -q "$url" "$cache"   # clone each repo once, reuse
   rm -rf "${SKILLS_DIR:?}/$name"
-  cp -r "$TMP/$name-src/$sub" "$SKILLS_DIR/$name"
+  cp -r "$cache/$sub" "$SKILLS_DIR/$name"
   printf '# Third-party skill — installed from source\n\nSource: %s\nUpstream: %s (%s)\n\nDo not re-commit this as your own; keep attribution.\n' \
     "$attrib" "$url" "$sub" > "$SKILLS_DIR/$name/SOURCE.md"
   echo "    installed: $name  <-  $attrib"
 }
 
 clone_skill "https://github.com/mattpocock/skills"      "skills/productivity/caveman"      "caveman"                 "Matt Pocock"
+clone_skill "https://github.com/mattpocock/skills"      "skills/productivity/handoff"      "handoff"                 "Matt Pocock"
+clone_skill "https://github.com/mattpocock/skills"      "skills/productivity/grill-me"     "grill-me"                "Matt Pocock"
 clone_skill "https://github.com/hardikpandya/stop-slop" "."                                "stop-slop"               "Hardik Pandya"
 clone_skill "https://github.com/addyosmani/agent-skills" "skills/spec-driven-development"  "spec-driven-development" "Addy Osmani"
 
@@ -48,6 +56,7 @@ cat <<'EOF'
        /plugin install superpowers@superpowers-marketplace
   2) Merge settings.example.json into ~/.claude/settings.json
      ("model": "opusplan" = Opus in plan mode, Sonnet otherwise;
-      UserPromptSubmit hook auto-escalates complex prompts to an Opus subagent).
+      UserPromptSubmit hook auto-escalates complex prompts to an Opus subagent;
+      statusLine shows the live model; permissions.allow has read-only MCP entries).
   3) Restart Claude Code (or /clear) so new skills + hooks load.
 EOF
