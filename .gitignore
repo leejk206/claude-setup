@@ -1,0 +1,11 @@
+# never publish secrets / personal / state
+.env
+*.local.*
+*.credentials*
+__pycache__/
+*.pyc
+.DS_Store
+# third-party skills are install-from-source, not vendored
+/skills/caveman/
+/skills/stop-slop/
+/skills/spec-driven-development/

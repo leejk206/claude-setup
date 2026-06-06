@@ -1,0 +1,14 @@
+{
+  "model": "sonnet",
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "superpowers-marketplace": {
+      "source": { "source": "github", "repo": "obra/superpowers-marketplace" }
+    }
+  },
+  "permissions": {
+    "allow": ["Bash", "Read", "Glob", "Grep"]
+  }
+}
