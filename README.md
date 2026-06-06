@@ -22,16 +22,54 @@ usage is maxed. The pieces here lean that way.
 - **spec-driven-development** — spec before code. *Addy Osmani* · `addyosmani/agent-skills`
 
 ## Install
+
+**Prerequisites:** [Claude Code](https://claude.com/claude-code), `git`, `python3`.
+
+### 1. Clone & run the installer
 ```bash
 git clone https://github.com/leejk206/claude-setup
 cd claude-setup
-./install.sh          # copies my skills + clones third-party skills into ~/.claude/skills
+./install.sh
 ```
-Then:
-1. Install the superpowers plugin: `/plugin marketplace add obra/superpowers-marketplace`
-   then `/plugin install superpowers@superpowers-marketplace` (or the official marketplace).
-2. Merge `settings.example.json` into `~/.claude/settings.json` (note `model: sonnet` default —
-   escalate to Opus explicitly; most coding is fine on Sonnet).
+`install.sh` does:
+- copies my own skills (**council**, **memory-write-gate**) into `~/.claude/skills/`
+- clones the third-party skills (**caveman**, **stop-slop**, **spec-driven-development**)
+  from their source repos into `~/.claude/skills/` (each gets a `SOURCE.md` with attribution)
+
+### 2. Install the superpowers base plugin (one-time)
+Run inside Claude Code:
+```
+/plugin marketplace add obra/superpowers-marketplace
+/plugin install superpowers@superpowers-marketplace
+```
+(Only one bootstrap-hook framework — superpowers. Everything else is hookless.)
+
+### 3. Apply settings
+Merge `settings.example.json` into `~/.claude/settings.json` (don't blind-overwrite — keep your
+own keys/hooks). Key line: `"model": "sonnet"` as the default; escalate to Opus explicitly.
+
+### 4. Reload
+Restart Claude Code or run `/clear` so the new skills load.
+
+### Verify
+```bash
+ls ~/.claude/skills          # council, memory-write-gate, caveman, stop-slop, spec-driven-development
+```
+In Claude Code the skills show up by name (e.g. invoke `/council`, or `caveman` / `stop-slop`).
+
+### Manual install (no script)
+```bash
+cp -r skills/council skills/memory-write-gate ~/.claude/skills/
+# third-party, from source:
+git clone --depth 1 https://github.com/mattpocock/skills /tmp/mp && cp -r /tmp/mp/skills/productivity/caveman ~/.claude/skills/
+git clone --depth 1 https://github.com/hardikpandya/stop-slop ~/.claude/skills/stop-slop
+git clone --depth 1 https://github.com/addyosmani/agent-skills /tmp/ao && cp -r /tmp/ao/skills/spec-driven-development ~/.claude/skills/
+```
+
+### Uninstall
+```bash
+rm -rf ~/.claude/skills/{council,memory-write-gate,caveman,stop-slop,spec-driven-development}
+```
 
 ## Notes
 - **One bootstrap-hook framework only** (superpowers). Add other packs as *hookless* skills.
